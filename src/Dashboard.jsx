@@ -1,16 +1,22 @@
-// src/components/Dashboard.js
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "./firebase"; // Adjust the import path according to your project structure
 import { signOut } from "firebase/auth";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUpload,
   faThList,
   faSignOutAlt,
   faUser,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 
 const Dashboard = () => {
@@ -52,6 +58,15 @@ const Dashboard = () => {
     }));
     setUserUploads(uploads);
     setShowUserUploads(true);
+  };
+
+  const handleDelete = async (uploadId) => {
+    try {
+      await deleteDoc(doc(db, "applications", uploadId));
+      setUserUploads(userUploads.filter((upload) => upload.id !== uploadId));
+    } catch (error) {
+      console.error("Error deleting upload: ", error);
+    }
   };
 
   const handleLogout = async () => {
@@ -123,6 +138,13 @@ const Dashboard = () => {
                 >
                   View Resume
                 </a>
+                <button
+                  onClick={() => handleDelete(upload.id)}
+                  className="bg-red-500 text-white p-2 rounded ml-4"
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                  Delete
+                </button>
               </div>
             ))
           ) : (
