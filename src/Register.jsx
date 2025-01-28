@@ -5,14 +5,19 @@ import { useNavigate } from "react-router-dom";
 import { auth, db } from "./firebase"; // Adjust the import path according to your project structure
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { collection, addDoc } from "firebase/firestore";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading state to true
+
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -33,6 +38,8 @@ const Register = () => {
     } catch (error) {
       alert(error.message);
       console.error("Error registering: ", error);
+    } finally {
+      setLoading(false); // Set loading state to false
     }
   };
 
@@ -51,6 +58,7 @@ const Register = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
             className="mt-1 p-2 border rounded w-full"
+            disabled={loading} // Disable input while loading
           />
         </div>
         <div className="mb-4">
@@ -61,13 +69,19 @@ const Register = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
             className="mt-1 p-2 border rounded w-full"
+            disabled={loading} // Disable input while loading
           />
         </div>
         <button
           type="submit"
-          className="bg-blue-500 text-white p-2 rounded w-full"
+          className="bg-blue-500 text-white p-2 rounded w-full flex items-center justify-center"
+          disabled={loading} // Disable button while loading
         >
-          Register
+          {loading ? (
+            <FontAwesomeIcon icon={faSpinner} spin className="mr-2" />
+          ) : (
+            "Register"
+          )}
         </button>
         <div className="mt-4 text-center">
           <span className="text-gray-700">Already have an account? </span>
